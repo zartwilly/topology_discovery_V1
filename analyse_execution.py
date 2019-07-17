@@ -20,7 +20,7 @@ import pandas as pd;
 import itertools as it;
 import multiprocessing as mp;
 
-import simulation_500_graphe_article as simi_graph_article_k_1;
+import simulation_graphe as simi_graph_k;
 
 from pathlib import Path    # http://stackoverflow.com/questions/6004073/how-can-i-create-directories-recursively
 
@@ -34,8 +34,6 @@ from email.mime.base import MIMEBase;
 from email.utils import COMMASPACE, formatdate;
 from email import encoders;
 
-import sys;
-sys.path.append('../');
 import fonctions_auxiliaires as fct_aux;
 
 
@@ -204,12 +202,12 @@ def execution_parallele_with_mail(graphes_GR_LG, parametres, DBG_PARALLELE):
     if DBG_PARALLELE:
         p = Pool(mp.cpu_count()-1) 
         list_returnss = p.starmap(
-                            simi_graph_article_k_1.simulation_p_correl_1_k_1, 
+                            simi_graph_k.simulation_p_correl_k, 
                             graphes_GR_LG)
         p.terminate()
     else:
         for graphe_GR_LG in graphes_GR_LG:
-            list_returns = simi_graph_article_k_1.simulation_p_correl_1_k_1(*graphe_GR_LG)
+            list_returns = simi_graph_k.simulation_p_correl_k(*graphe_GR_LG)
             list_returnss.append(list_returns);
             
     flat_returns = list(it.chain.from_iterable(list_returnss))
