@@ -527,17 +527,99 @@ def gamma_noeud(matE, liste_aretes):
     but: determine le nombre de voisin d'un noeud et la liste des noeuds de son voisinage
     return dico
     """
-    dico = dict()
-    l_noeuds = matE.columns.tolist()
-    for noeud in l_noeuds:
-        ens = set()
-        for arc in liste_aretes:
-            if noeud == arc[0]:
-                ens.add( arc[1] )
-            if noeud == arc[1]:
-                ens.add( arc[0] )
-        dico[noeud] = [len(ens), ens]
+    dico = dict();
+    if liste_aretes:
+        for noeud in matE.columns:
+            ens = set();
+            for arc in liste_aretes:
+                if noeud == arc[0]:
+                    ens.add( arc[1] )
+                if noeud == arc[1]:
+                    ens.add( arc[0] )
+            dico[noeud] = [len(ens), ens]
+    else:
+        for noeud in matE.columns:
+            ens = frozenset([xj for xj in matE.columns \
+                         if matE.loc[noeud][xj] == 1]);
+            dico[noeud] = [len(ens), ens];
     return dico;
+
+def couverture_par_sommets(sommets_matE, C):
+    """ 
+    retourne les cliques couvrants tous les sommets d'un graphe. 
+    """ 
+    dico_sommets_par_cliqs = dict();
+    for cliq in C:
+        for sommet in cliq:
+            if sommet not in dico_sommets_par_cliqs.keys():
+                dico_sommets_par_cliqs[sommet] = [cliq];
+            else:
+                dico_sommets_par_cliqs[sommet].append(cliq);
+    sommets_not_in_cliq = set(sommets_matE) - set(dico_sommets_par_cliqs.keys());
+    for sommet in sommets_not_in_cliq:
+        dico_sommets_par_cliqs[sommet] = [];
+    return dico_sommets_par_cliqs;
 ###############################################################################
 #                determiner la voisinage de chaque sommet ====> fin     
+###############################################################################
+   
+    
+
+"""
+application de l'algorithme de correction
+"""
+###############################################################################
+#          determiner les aretes de toutes les cliques ====> debut    
+###############################################################################
+def gamma(liste_arcs, noeud):
+    """
+    recherche le voisinage de "noeud"
+    cad pour chaque arc si noeud est une extremite de cet arc
+    """        
+    voisins = list();        
+    voisins = list(filter(lambda arete: arete[0] == noeud \
+                                                or arete[1] == noeud, 
+                                liste_arcs));
+    return voisins;
+
+def aretes_dans_cliques(C):
+    """ 
+    retourne les aretes de tous les cliques. 
+    """
+
+    f_subset = lambda elt: type(elt) == list \
+                            or type(elt) == set \
+                            or type(elt) == frozenset;
+                            
+    aretes_cliques = list();
+    boolean_subset = True if list(filter(f_subset, C)) else False;
+    
+    if boolean_subset:
+        aretes_cliques = [item for sublist in [list(it.combinations(c,2)) 
+                                            for c in C] 
+                        for item in sublist]
+    else:
+        aretes_cliques = list(it.combinations(C,2));
+    return aretes_cliques;
+
+def determiner_aretes_cliques(cliques):
+    """
+    former un ensemble contenant les aretes des cliques.
+    """
+    
+    f_subset = lambda elt: type(elt) == list \
+                            or type(elt) == set \
+                            or type(elt) == frozenset;
+    aretes_cliques = []
+    boolean_subset = False;
+    boolean_subset = True if list(filter(f_subset, cliques)) else False;
+            
+    if boolean_subset:
+        for Cu in cliques:
+            aretes_cliques.extend( it.combinations(Cu,2) );
+    else:
+        aretes_cliques = list(it.combinations(cliques,2));
+    return aretes_cliques;
+###############################################################################
+#         determiner les aretes de toutes les cliques ====> fin     
 ###############################################################################
