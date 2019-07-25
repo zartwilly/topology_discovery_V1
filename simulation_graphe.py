@@ -19,28 +19,12 @@ import pandas as pd;
 import itertools as it;
 
 import algorithme_couverture as algo_couv;
-import algorithme_correction as algo_corr;
+import algorithme_correction_gnrle as algo_corr;
 from pathlib import Path    # http://stackoverflow.com/questions/6004073/how-can-i-create-directories-recursively
 
 import genererMatA as geneMatA;
 import generations_mesures as mesures;
 import fonctions_auxiliaires as fct_aux;
-
-###############################################################################
-#                   fonctions annexes ---> debut
-###############################################################################
-def determiner_aretes_cliques(cliques):
-    """
-    former un ensemble contenant les aretes des cliques.
-    """
-    aretes = []
-    for Cu in cliques:
-        aretes.extend( it.combinations(Cu,2) )
-    return aretes;
-
-###############################################################################
-#                   fonctions annexes ---> fin
-###############################################################################
 
 ###############################################################################
 #                   calculer DH ou DC ---> debut
@@ -349,16 +333,26 @@ def simulation_p_correl_k(matE_LG,
             # algorithme correction pour k = 1
             print("2")
             dico_correction = dico_couverture;
+            dico_sommets_corriges = dict();
             if -1 in dico_couverture['etats_sommets'].values():
-                aretes_matE_k_alpha = fct_aux.liste_arcs(matE_k_alpha)
-                dico_gamma_noeud = fct_aux.gamma_noeud(
-                                        matE_k_alpha, 
-                                        aretes_matE_k_alpha)
-                dico_correction = algo_corr.correction_cliques(
-                                    dico_correction,
-                                    aretes_matE_k_alpha,
-                                    dico_gamma_noeud,
-                                    dico_parametres_new)
+                aretes_matE_k_alpha = fct_aux.liste_arcs(matE_k_alpha);
+                dico_correction["C"] = dico_correction["C"] \
+                                        + dico_correction['aretes_restantes'];
+                dico_correction["C"] = list(map(set, dico_correction["C"]));                        
+                dico_correction["sommets_par_cliqs_avec_aretes"] = \
+                fct_aux.couverture_par_sommets(
+                    sommets_matE = list(dico_correction["etats_sommets"].keys()),
+                    C = dico_correction["C"]);
+                dico_correction["aretes_Ec"] = aretes_matE_k_alpha;
+                dico_correction["dico_gamma_sommets"] = fct_aux.gamma_noeud(
+                                                        matE_k_alpha, 
+                                                        aretes_matE_k_alpha);
+                        
+                dico_correction, dico_sommets_corriges = \
+                            algo_corr.correction_cliques(
+                                    dico_correction, 
+                                    dico_parametres_new);
+                                    
             elif -1 not in dico_couverture['etats_sommets'].values() and \
                 len(dico_correction['aretes_restantes']) > 0:
                 dico_correction["C"] = \
@@ -368,6 +362,7 @@ def simulation_p_correl_k(matE_LG,
                 fct_aux.couverture_par_sommets(
                     sommets_matE = list(dico_correction["etats_sommets"].keys()),
                     C = dico_correction["C"]);
+                        
             elif -1 not in dico_couverture['etats_sommets'].values() and \
                 len(dico_correction['aretes_restantes']) == 0:
                 dico_correction["sommets_par_cliqs_avec_aretes"] = \
@@ -377,7 +372,7 @@ def simulation_p_correl_k(matE_LG,
                         
             # calcul DH et DC
             print("3")
-            aretes_cliques = determiner_aretes_cliques(dico_correction["C"]);
+            aretes_cliques = fct_aux.determiner_aretes_cliques(dico_correction["C"]);
             aretes_matE_k_alpha = fct_aux.liste_arcs(matE_k_alpha);
             aretes_matE_LG = fct_aux.liste_arcs(matE_LG);
             
