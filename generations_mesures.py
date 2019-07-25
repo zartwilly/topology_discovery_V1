@@ -459,18 +459,26 @@ def genererMesures_descendant(matA, dico_dual_arc_sommet, grandeur, taille = 3, 
                 succ = list_succ.pop()
                 
                 if grandeur in liste_grandeurs_sommables:
-                    dico_grandeur[succ] += dico_grandeur[noeud_source] * (1/nbre_succ)*(1 - effet_joule)
-                    arc_ = (noeud_source, succ)
-                    dico_arc[arc_] += dico_grandeur[noeud_source] * (1/nbre_succ)*(1 - effet_joule)
+                    dico_grandeur[succ] += dico_grandeur[noeud_source] \
+                                            * (1/nbre_succ)*(1 - effet_joule)
+                    arc_ = (noeud_source, succ) \
+                            if (noeud_source, succ) in dico_arc.keys() \
+                            else (succ, noeud_source)
+                    dico_arc[arc_] += dico_grandeur[noeud_source] \
+                                        * (1/nbre_succ)*(1 - effet_joule)
                 else:
-                    dico_grandeur[succ] = dico_grandeur[noeud_source] *( 1 - effet_joule/nbre_succ )
-                    arc_ = (noeud_source, succ)
-                    dico_arc[arc_] = dico_grandeur[noeud_source]*( 1 - effet_joule/nbre_succ )
+                    dico_grandeur[succ] = dico_grandeur[noeud_source] \
+                                            *( 1 - effet_joule/nbre_succ )
+                    arc_ = (noeud_source, succ) \
+                            if (noeud_source, succ) in dico_arc.keys() \
+                            else (succ, noeud_source)
+                    dico_arc[arc_] = dico_grandeur[noeud_source] \
+                                        *( 1 - effet_joule/nbre_succ )
 #                #print ("dico_grandeur[", succ ,"] = ", dico_grandeur[succ])
-                liste_source.insert(0, succ) # ajout de noeud successeur dans la queue de la file
+                liste_source.insert(0, succ)                                    # ajout de noeud successeur dans la queue de la file
                 cpt += 1
         
-        if len( liste_source ) == 0 :
+        if len( liste_source ) == 0:
             bool = False
 
     for cle, serie in dico_grandeur.items():
@@ -485,7 +493,7 @@ def genererMesures_descendant(matA, dico_dual_arc_sommet, grandeur, taille = 3, 
             nom_cle =  arc +"_"+grandeur
             dico_arc_nom[ nom_cle ] = dico_arc[tuple_inv] 
 
-    return dico_arc_nom
+    return dico_arc_nom;
 
 def genererMesures_all_grandeurs(matA, dico_dual_arc_sommet, liste_grandeurs, location = "data/datasets/", taille = 3, effet_joule = 0):
     '''
