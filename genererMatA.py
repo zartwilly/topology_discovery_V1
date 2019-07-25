@@ -262,7 +262,7 @@ def orienter_graphe(mat_, noeuds, aretes):
     noeud_source = random.choice(noeuds);
 #    noeud_source = "0"
     noeud_select = noeud_source;      
-    dico_gamma = fct_aux.gamma_noeud_(mat_); # {"2":[3,{"1","3","4"},....]}
+    dico_gamma = fct_aux.gamma_noeud(mat_, []); # {"2":[3,{"1","3","4"},....]}
 #    aretes = fct_aux.liste_arcs(mat_)
 #    print("aretes: ",aretes)
     cpt_noeuds = 0;
