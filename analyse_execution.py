@@ -112,9 +112,10 @@ def define_parametres(dico_parametres, dbg_mesures):
             
     graphes_GR_LG = list();
     
-    for (type_operat, mode, p_correl, k_erreur, nbre_graphe) in it.product(
+    for (type_operat, mode, critere, p_correl, k_erreur, nbre_graphe) in it.product(
                     dico_parametres["type_operations"],
                     dico_parametres["mode_select_noeuds_1s"],
+                    dico_parametres["critere_selection_compressions"],
                     dico_parametres["p_correls"],
                     dico_parametres["k_erreurs"],
                     dico_parametres["nbre_graphes"]
@@ -170,6 +171,7 @@ def define_parametres(dico_parametres, dbg_mesures):
                            type_operat);
         dico_parametres_new['p_correl'] = p_correl;
         dico_parametres_new['mode_select_noeuds_1'] = mode;
+        dico_parametres_new['critere_selection_compression'] = critere;
         graphes_GR_LG.append(
                         (matE_LG, 
                          matA_GR, 
@@ -219,8 +221,17 @@ def execution_parallele_with_mail(graphes_GR_LG, parametres, DBG_PARALLELE):
         dico_results[dico['nom_graphe']] = dico;
         
     df_results = pd.DataFrame.from_dict(data=dico_results, orient='index')
-    df_results.to_pickle(parametres["rep"]\
-                      +"/"+"resume_execution_k_"\
+    rep_base = parametres["rep"] \
+                + "/" \
+                + parametres["type_operations"][0] \
+                + "/" \
+                + parametres["mode_select_noeuds_1s"][0]+ "_sommets_GR_" \
+                    + str(parametres["nbre_sommets_GR"]) \
+                + "/" \
+                + "data_p_" + str(parametres["p_correls"][0]) 
+    df_results.to_pickle(rep_base \
+                      +"/distribution" \
+                      +"/"+"resume_execution_k_" \
                       +"_".join(map(str, parametres["k_erreurs"]))\
                       +"_nbre_sommets_GR_"\
                       +str(parametres["nbre_sommets_GR"])+".csv") 
@@ -258,7 +269,8 @@ def execution_parallele_with_mail(graphes_GR_LG, parametres, DBG_PARALLELE):
 #           definir les parametres generales d'execution  ===> debut
 ###############################################################################
 def parametres_generales(nbre_sommets_GR, k_erreurs, alpha_max, NBRE_GRAPHE,
-                         p_correl, mode_select_noeuds_1, rep):
+                         p_correl, mode_select_noeuds_1, 
+                         critere_selection_compressions, rep):
     """
     definir les parametres generales d'execution de la simulation 
     de nos algorithmes.
@@ -319,6 +331,7 @@ def parametres_generales(nbre_sommets_GR, k_erreurs, alpha_max, NBRE_GRAPHE,
             "type_operations": type_operations, 
             "mode_select_noeuds_1s": mode_select_noeuds_1s,
             "critere_selection_pi1_pi2": critere_selection_pi1_pi2,
+            "critere_selection_compressions": critere_selection_compressions,
             "nbre_sommets_GR": nbre_sommets_GR,
             "k_erreurs": k_erreurs,
             "nbre_graphes": nbre_graphes,
@@ -370,17 +383,19 @@ def analyse_df_res(parametres):
     """
     analyse du resume de l'execution des graphes
     """
-    nom_resume_execution = "resume_execution_k_{}_".format(parametres['k_erreurs'][0])\
-                            +"nbre_sommets_GR_{}.csv".format(parametres['nbre_sommets_GR'])
+    nom_resume_execution = "resume_execution_k_{}_".format(
+            "_".join(map(str, parametres["k_erreurs"]))) \
+            +"nbre_sommets_GR_{}.csv".format(parametres['nbre_sommets_GR'])
 #    rep_base = parametres["rep"] #+ "/" + parametres["type_operations"][0] 
     rep_base = parametres["rep"] \
             + "/" \
             + parametres["type_operations"][0] \
             + "/" \
-            + parametres["mode_select_noeuds_1s"]+ "_sommets_GR_" + str(parametres["nbre_sommets_GR"]) \
+            + parametres["mode_select_noeuds_1s"][0]+ "_sommets_GR_" \
+                + str(parametres["nbre_sommets_GR"]) \
             + "/" \
             + "data_p_" + str(parametres["p_correls"][0]);
-    file = rep_base + "/" + nom_resume_execution;
+    file = rep_base + "/distribution/" + nom_resume_execution;
     
     f = lambda row:"_".join([row.split("_")[0],row.split("_")[1]])
 
