@@ -80,15 +80,7 @@ def mise_a_jour_aretes_cliques(C_new,
             dico_sommets_non_corriges, \
             dico_sommets_par_cliqs_new;
     
-def aretes_differente(aretes_Ec, aretes_cible):
-    """ retourner le nombre d'aretes differente entre aretes_Ec, aretes_cible. """
-    res = set()
-    for arete in aretes_cible:
-        if (arete[0], arete[1]) not in aretes_Ec and \
-            (arete[1], arete[0]) not in aretes_Ec:
-            res.add((arete[0], arete[1]))
-#    res = aretes_Ec.union(aretes_cible) - aretes_Ec.intersection(aretes_cible)         
-    return res;
+
 ###############################################################################
 #                fonctions de bases pour la correction => fin
 ###############################################################################
@@ -404,7 +396,7 @@ def compression_sommet(id_sommet_z,
             aretes_ps = set( frozenset((sommet_z, sommet_ps)) 
                              for sommet_ps in ps);
             aretes_p1 = fct_aux.determiner_aretes_cliques(p1);
-            aretes_ajoutees_p1 = aretes_differente(args["aretes_Ec"], 
+            aretes_ajoutees_p1 = fct_aux.aretes_differente(args["aretes_Ec"], 
                                                    aretes_p1);
             aretes_Ec_new = set(args["aretes_Ec"]).union(aretes_ajoutees_p1);
             
@@ -466,11 +458,11 @@ def compression_sommet(id_sommet_z,
             aretes_ps = set( frozenset((sommet_z, sommet_ps)) 
                              for sommet_ps in ps);
             aretes_p1 = fct_aux.determiner_aretes_cliques(p1);
-            aretes_ajoutees_p1 = aretes_differente(args["aretes_Ec"], 
+            aretes_ajoutees_p1 = fct_aux.aretes_differente(args["aretes_Ec"], 
                                                  aretes_p1);
             
             aretes_p2 = fct_aux.determiner_aretes_cliques(p2);
-            aretes_ajoutees_p2 = aretes_differente(args["aretes_Ec"], 
+            aretes_ajoutees_p2 = fct_aux.aretes_differente(args["aretes_Ec"], 
                                                  aretes_p2);
                                                 
             aretes_Ec_new = set(args["aretes_Ec"]).union(
@@ -563,12 +555,14 @@ def compression_sommet(id_sommet_z,
                                      for sommet_ps in ps);
                     
                     aretes_p1 = fct_aux.determiner_aretes_cliques(p1);
-                    aretes_ajoutees_p1 = aretes_differente(args["aretes_Ec"], 
-                                                         aretes_p1);
+                    aretes_ajoutees_p1 = fct_aux.aretes_differente(
+                                                args["aretes_Ec"], 
+                                                aretes_p1);
                     
                     aretes_p2 = fct_aux.determiner_aretes_cliques(p2);
-                    aretes_ajoutees_p2 = aretes_differente(args["aretes_Ec"], 
-                                                         aretes_p2);
+                    aretes_ajoutees_p2 = fct_aux.aretes_differente(
+                                                args["aretes_Ec"], 
+                                                aretes_p2);
                                                         
                     aretes_Ec_new = set(args["aretes_Ec"]).union(
                                     aretes_ajoutees_p1.union(aretes_ajoutees_p2));
@@ -1067,7 +1061,6 @@ def correction_aleatoire(sommets_a_corriger,
     print("sommets_a_corriger={} = {}".format(
             len(sommets_a_corriger), sommets_a_corriger));
             
-#    while(sommets_a_corriger):
     dico_compression = dict();
     
     for id_sommet_1, sommet_1 in enumerate(sommets_a_corriger):
@@ -1171,7 +1164,6 @@ def correction_aleatoire(sommets_a_corriger,
         # mettre a jour les cliques couvrants les sommets.
         dico_correction["sommets_par_cliqs_avec_aretes"] = \
                     dico_sol_C2_C1["sommets_par_cliqs_avec_aretes_new"];
-#        pass # end while sommets_a_corriger
         
     return dico_correction, dico_sommets_corriges;
 ###############################################################################
