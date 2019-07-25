@@ -277,6 +277,8 @@ def simulation_p_correl_k(matE_LG,
     path = Path(path_distr); path.mkdir(parents=True, exist_ok=True)
     print("path_distr = {}".format(path_distr))
     
+    aretes_matE = fct_aux.liste_arcs(matE_LG);
+    
     list_returns = list();
     for alpha in range(dico_parametres_new["alpha_max"]):
         
@@ -343,6 +345,7 @@ def simulation_p_correl_k(matE_LG,
                 fct_aux.couverture_par_sommets(
                     sommets_matE = list(dico_correction["etats_sommets"].keys()),
                     C = dico_correction["C"]);
+                dico_correction["aretes_matE"] = aretes_matE;
                 dico_correction["aretes_Ec"] = aretes_matE_k_alpha;
                 dico_correction["dico_gamma_sommets"] = fct_aux.gamma_noeud(
                                                         matE_k_alpha, 
