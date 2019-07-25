@@ -620,6 +620,16 @@ def determiner_aretes_cliques(cliques):
     else:
         aretes_cliques = list(it.combinations(cliques,2));
     return aretes_cliques;
+
+def aretes_differente(aretes_Ec, aretes_cible):
+    """ retourner le nombre d'aretes differente entre aretes_Ec, aretes_cible. """
+    res = set()
+    for arete in aretes_cible:
+        if (arete[0], arete[1]) not in aretes_Ec and \
+            (arete[1], arete[0]) not in aretes_Ec:
+            res.add((arete[0], arete[1]))
+#    res = aretes_Ec.union(aretes_cible) - aretes_Ec.intersection(aretes_cible)         
+    return res;
 ###############################################################################
 #         determiner les aretes de toutes les cliques ====> fin     
 ###############################################################################
