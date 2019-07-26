@@ -654,12 +654,26 @@ def supprimer_cliq_couvert_min_solution(min_tuple_solution_0,
     {1,2,3}.issubset({1,2}) ====> FALSE
     """
     # TODO si cliq < min_tuple_solution_0 => 
-    #         cliq.issubset(min_tuple_solution_0) == FALSE  ===> PROBLEME
-    tmp_ens_C = cliques_couvertures.copy()
+    #         cliq.issubset(min_tuple_solution_0) == FALSE  
+    # ===> PROBLEME CORRIGE
+#    tmp_ens_C = cliques_couvertures.copy()
+#    for cliq in tmp_ens_C:
+#        if cliq.issubset(min_tuple_solution_0):
+#            cliques_couvertures.remove(cliq);
+#    return cliques_couvertures;
+
+    tmp_ens_C = cliques_couvertures.copy();
     for cliq in tmp_ens_C:
-        if cliq.issubset(min_tuple_solution_0):
+        if len(cliq.intersection(min_tuple_solution_0)) > 1:
             cliques_couvertures.remove(cliq);
-    return cliques_couvertures; 
+    return cliques_couvertures;
+
+#   TODO : a tester
+#    tmp_ens_C = cliques_couvertures.copy();
+#    f = lambda cliq : len(cliq.intersection(min_tuple_solution_0)) > 1;
+#    for cliq_a_del in filter(f, tmp_ens_C):
+#        cliques_couvertures.remove(cliq_a_del);
+#    return cliques_couvertures;
 ###############################################################################
 #                     supprimer les petites cliques
 #                   contenues dans d'autres cliques  => fin
